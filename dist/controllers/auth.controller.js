@@ -51,6 +51,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             (0, createError_1.default)(400, 'Invalid password');
         }
         const token = (0, createTokenJwt_1.default)(user === null || user === void 0 ? void 0 : user._id, process.env.SECRECT_TOKEN);
+        res.header('auth-token', token);
         return res.status(200).json({
             ok: true,
             status: 200,
@@ -63,7 +64,21 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.signin = signin;
-const profile = (req, res) => {
-};
+const profile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findById(req.userId);
+        if (!user) {
+            throw (0, createError_1.default)(404, 'No user found');
+        }
+        return res.status(200).json({
+            ok: true,
+            status: 200,
+            data: user
+        });
+    }
+    catch (error) {
+        return (0, errorResponse_1.default)(res, error, 'profile');
+    }
+});
 exports.profile = profile;
 //# sourceMappingURL=auth.controller.js.map

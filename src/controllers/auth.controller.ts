@@ -41,17 +41,30 @@ try {
         createError(400, 'Invalid password')
     }
     const token = createTokenJwt(user?._id,process.env.SECRECT_TOKEN)
+    res.header('auth-token',token);
     return res.status(200).json({
         ok : true,
         status: 200,
         data : user,
-        token : token
+        token : token 
     })
 } catch (e) {
     return errorResponse(res,e,'signin')
 }
 };
 
-export const profile = (req: Request, res: Response) => {
-    
+export const profile = async (req: Request, res: Response) => {
+   try {
+       const user = await User.findById(req.userId);
+       if (!user) {
+           throw createError(404, 'No user found');
+       }
+       return res.status(200).json({
+        ok : true,
+        status : 200,
+        data : user
+       })
+   } catch (error) {
+    return errorResponse(res,error,'profile')
+   }
 };
